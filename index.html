@@ -11,17 +11,28 @@
 :root{
   --primary:#FFC72C;
   --bg:#0a0a0a;
+  --bg2:#1a1a1a;
   --card:#2a2a2a;
-  --text:#fff;
+  --text:#ffffff;
   --font:16px;
 }
+
+/* TEMA CLARO */
+.light{
+  --bg:#f4f4f4;
+  --bg2:#ffffff;
+  --card:#e6e6e6;
+  --text:#111111;
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  background:linear-gradient(135deg,#0a0a0a,#1a1a1a);
+  background:linear-gradient(135deg,var(--bg),var(--bg2));
   color:var(--text);
   font-family:'Crimson Text',serif;
   font-size:var(--font);
 }
+
 header{
   display:flex;
   align-items:center;
@@ -37,12 +48,14 @@ h1{
 }
 .controls button{
   background:none;border:none;color:var(--primary);
-  font-size:1.2rem;cursor:pointer;margin-left:.5rem;
+  font-size:1.3rem;cursor:pointer;margin-left:.5rem;
 }
+
 .search{padding:1rem 1.5rem}
 .search input{
   width:100%;padding:.8rem 1rem;border-radius:10px;border:none;font-size:1rem;
 }
+
 .container{max-width:900px;margin:1.5rem auto;padding:0 1rem}
 
 .playlist-launch{
@@ -61,20 +74,33 @@ h1{
 }
 
 .card{
-  background:var(--card);padding:1rem;border-radius:10px;margin-bottom:1rem;cursor:pointer
+  background:var(--card);
+  padding:1rem;
+  border-radius:10px;
+  margin-bottom:1rem;
+  cursor:pointer
 }
 .card:hover{outline:2px solid var(--primary)}
 .num{
-  background:var(--primary);color:#000;padding:.2rem .6rem;
-  border-radius:6px;font-weight:bold;margin-right:.5rem
+  background:var(--primary);
+  color:#000;
+  padding:.2rem .6rem;
+  border-radius:6px;
+  font-weight:bold;
+  margin-right:.5rem
 }
 
 .overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);overflow:auto;z-index:10
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  overflow:auto;
+  z-index:10
 }
 .overlay.active{display:block}
 
-.detail, .playlist-panel{
+.detail,.playlist-panel{
   background:var(--card);
   max-width:900px;
   margin:2rem auto;
@@ -90,7 +116,11 @@ h1{
   cursor:pointer;
 }
 
-.lyrics{white-space:pre-wrap;line-height:1.8;margin:1.5rem 0}
+.lyrics{
+  white-space:pre-wrap;
+  line-height:1.8;
+  margin:1.5rem 0
+}
 
 audio{width:100%;margin-top:1rem}
 
@@ -130,6 +160,7 @@ audio{width:100%;margin-top:1rem}
   <img src="https://i.imgur.com/4aZvsOD.png" alt="Logo">
   <h1>Hinário Ubuntu</h1>
   <div class="controls">
+    <button onclick="toggleTheme()" title="Alternar tema">🌙</button>
     <button onclick="font(-1)">A-</button>
     <button onclick="font(1)">A+</button>
   </div>
@@ -146,7 +177,6 @@ audio{width:100%;margin-top:1rem}
   <div id="list">Carregando hinos…</div>
 </div>
 
-<!-- HINO -->
 <div class="overlay" id="overlay">
   <div class="detail">
     <span class="back" onclick="closeDetail()">← Voltar ao índice</span>
@@ -158,18 +188,14 @@ audio{width:100%;margin-top:1rem}
   </div>
 </div>
 
-<!-- PLAYLIST -->
 <div class="overlay" id="playlistOverlay">
   <div class="playlist-panel">
     <span class="back" onclick="closePlaylist()">← Voltar ao índice</span>
     <h2>Playlist contínua</h2>
-
     <div class="now-playing">
       Tocando agora: <span id="nowPlaying">—</span>
     </div>
-
     <audio id="playlistPlayer" controls></audio>
-
     <div class="playlist-controls">
       <button onclick="prevTrack()">⏮ Anterior</button>
       <button onclick="startPlaylist()">▶ Iniciar</button>
@@ -188,6 +214,10 @@ let hymns=[],playlist=[],currentIndex=0,size=16;
 function font(d){
   size=Math.min(26,Math.max(12,size+d));
   document.documentElement.style.setProperty('--font',size+'px');
+}
+
+function toggleTheme(){
+  document.body.classList.toggle('light');
 }
 
 function parseCSV(t){
@@ -250,7 +280,7 @@ function closePlaylist(){
 
 function updateNowPlaying(){
   if(playlist[currentIndex]){
-    nowPlaying.textContent = playlist[currentIndex].num + " – " + playlist[currentIndex].title;
+    nowPlaying.textContent=playlist[currentIndex].num+" – "+playlist[currentIndex].title;
   }
 }
 
@@ -261,34 +291,13 @@ function startPlaylist(){
   updateNowPlaying();
 }
 
-function pausePlaylist(){
-  playlistPlayer.pause();
-}
-
-function stopPlaylist(){
-  playlistPlayer.pause();
-  playlistPlayer.currentTime=0;
-}
-
-function nextTrack(){
-  if(currentIndex < playlist.length - 1){
-    currentIndex++;
-    startPlaylist();
-  }
-}
-
-function prevTrack(){
-  if(currentIndex > 0){
-    currentIndex--;
-    startPlaylist();
-  }
-}
+function pausePlaylist(){playlistPlayer.pause()}
+function stopPlaylist(){playlistPlayer.pause();playlistPlayer.currentTime=0}
+function nextTrack(){if(currentIndex<playlist.length-1){currentIndex++;startPlaylist()}}
+function prevTrack(){if(currentIndex>0){currentIndex--;startPlaylist()}}
 
 playlistPlayer.addEventListener('ended',()=>{
-  if(currentIndex < playlist.length - 1){
-    currentIndex++;
-    startPlaylist();
-  }
+  if(currentIndex<playlist.length-1){currentIndex++;startPlaylist()}
 });
 
 fetch(CSV_URL).then(r=>r.text()).then(t=>{
