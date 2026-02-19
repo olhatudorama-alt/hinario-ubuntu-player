@@ -106,6 +106,7 @@ audio{width:100%;margin-top:1rem}
   display:flex;
   gap:1rem;
   margin-top:1rem;
+  flex-wrap:wrap;
 }
 .playlist-controls button{
   background:var(--primary);
@@ -114,6 +115,11 @@ audio{width:100%;margin-top:1rem}
   border-radius:8px;
   font-weight:bold;
   cursor:pointer;
+}
+
+.now-playing{
+  margin-top:1rem;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -157,11 +163,19 @@ audio{width:100%;margin-top:1rem}
   <div class="playlist-panel">
     <span class="back" onclick="closePlaylist()">← Voltar ao índice</span>
     <h2>Playlist contínua</h2>
+
+    <div class="now-playing">
+      Tocando agora: <span id="nowPlaying">—</span>
+    </div>
+
     <audio id="playlistPlayer" controls></audio>
+
     <div class="playlist-controls">
+      <button onclick="prevTrack()">⏮ Anterior</button>
       <button onclick="startPlaylist()">▶ Iniciar</button>
       <button onclick="pausePlaylist()">⏸ Pausar</button>
       <button onclick="stopPlaylist()">⏹ Parar</button>
+      <button onclick="nextTrack()">⏭ Próximo</button>
     </div>
   </div>
 </div>
@@ -234,10 +248,17 @@ function closePlaylist(){
   playlistOverlay.classList.remove('active');
 }
 
+function updateNowPlaying(){
+  if(playlist[currentIndex]){
+    nowPlaying.textContent = playlist[currentIndex].num + " – " + playlist[currentIndex].title;
+  }
+}
+
 function startPlaylist(){
   if(!playlist.length) return;
   playlistPlayer.src=playlist[currentIndex].audio;
   playlistPlayer.play();
+  updateNowPlaying();
 }
 
 function pausePlaylist(){
@@ -249,11 +270,24 @@ function stopPlaylist(){
   playlistPlayer.currentTime=0;
 }
 
+function nextTrack(){
+  if(currentIndex < playlist.length - 1){
+    currentIndex++;
+    startPlaylist();
+  }
+}
+
+function prevTrack(){
+  if(currentIndex > 0){
+    currentIndex--;
+    startPlaylist();
+  }
+}
+
 playlistPlayer.addEventListener('ended',()=>{
-  currentIndex++;
-  if(currentIndex<playlist.length){
-    playlistPlayer.src=playlist[currentIndex].audio;
-    playlistPlayer.play();
+  if(currentIndex < playlist.length - 1){
+    currentIndex++;
+    startPlaylist();
   }
 });
 
