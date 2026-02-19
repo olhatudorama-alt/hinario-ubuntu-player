@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hinário Ubuntu</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -47,26 +45,19 @@ h1{
 }
 .container{max-width:900px;margin:1.5rem auto;padding:0 1rem}
 
-.playlist-tab{
+.playlist-launch{
   display:flex;
-  align-items:center;
-  gap:.6rem;
+  justify-content:flex-end;
+  margin-bottom:1rem;
+}
+.playlist-launch button{
   background:var(--card);
-  padding:.6rem .8rem;
-  border-radius:10px;
-  width:max-content;
-  margin-bottom:1.2rem;
-}
-.playlist-tab button{
-  background:var(--primary);
-  border:none;
-  width:38px;height:38px;
+  border:2px solid var(--primary);
+  color:var(--primary);
+  padding:.5rem .8rem;
   border-radius:8px;
-  font-size:1.1rem;
-  cursor:pointer;
-}
-.playlist-tab span{
   font-weight:bold;
+  cursor:pointer;
 }
 
 .card{
@@ -77,25 +68,52 @@ h1{
   background:var(--primary);color:#000;padding:.2rem .6rem;
   border-radius:6px;font-weight:bold;margin-right:.5rem
 }
+
 .overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);overflow:auto
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);overflow:auto;z-index:10
 }
 .overlay.active{display:block}
-.detail{
-  background:var(--card);max-width:900px;margin:2rem auto;
-  padding:2rem;border-radius:15px
+
+.detail, .playlist-panel{
+  background:var(--card);
+  max-width:900px;
+  margin:2rem auto;
+  padding:2rem;
+  border-radius:15px
 }
+
 .back{
-  color:var(--primary);font-weight:bold;cursor:pointer;margin:1.2rem 0;display:inline-block
+  display:block;
+  margin:1.2rem 0;
+  color:var(--primary);
+  font-weight:bold;
+  cursor:pointer;
 }
+
 .lyrics{white-space:pre-wrap;line-height:1.8;margin:1.5rem 0}
-audio{width:100%;margin-top:1.2rem}
+
+audio{width:100%;margin-top:1rem}
+
 .download-btn{
-  display:inline-block;
-  margin:1rem 0;
+  display:block;
+  margin:1.2rem 0;
   color:var(--primary);
   font-weight:bold;
   text-decoration:none;
+}
+
+.playlist-controls{
+  display:flex;
+  gap:1rem;
+  margin-top:1rem;
+}
+.playlist-controls button{
+  background:var(--primary);
+  border:none;
+  padding:.5rem 1rem;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -116,34 +134,42 @@ audio{width:100%;margin-top:1.2rem}
 </div>
 
 <div class="container">
-
-  <!-- PLAYLIST DISCRETA -->
-  <div class="playlist-tab">
-    <button onclick="startPlaylist()">▶</button>
-    <span>Playlist</span>
-    <audio id="playlistPlayer" controls style="display:none"></audio>
+  <div class="playlist-launch">
+    <button onclick="openPlaylist()">▶ Playlist</button>
   </div>
-
   <div id="list">Carregando hinos…</div>
 </div>
 
+<!-- HINO -->
 <div class="overlay" id="overlay">
   <div class="detail">
-    <div class="back" onclick="closeDetail()">← Voltar ao índice</div>
+    <span class="back" onclick="closeDetail()">← Voltar ao índice</span>
     <h2><span id="dnum"></span> – <span id="dtitle"></span></h2>
     <div class="lyrics" id="dlyrics"></div>
-
     <audio id="player" controls style="display:none"></audio>
     <a id="downloadLink" class="download-btn" href="#" download style="display:none">⬇️ Baixar áudio</a>
+    <span class="back" onclick="closeDetail()">← Voltar ao índice</span>
+  </div>
+</div>
 
-    <div class="back" onclick="closeDetail()">← Voltar ao índice</div>
+<!-- PLAYLIST -->
+<div class="overlay" id="playlistOverlay">
+  <div class="playlist-panel">
+    <span class="back" onclick="closePlaylist()">← Voltar ao índice</span>
+    <h2>Playlist contínua</h2>
+    <audio id="playlistPlayer" controls></audio>
+    <div class="playlist-controls">
+      <button onclick="startPlaylist()">▶ Iniciar</button>
+      <button onclick="pausePlaylist()">⏸ Pausar</button>
+      <button onclick="stopPlaylist()">⏹ Parar</button>
+    </div>
   </div>
 </div>
 
 <script>
 const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vRMmvd1DczfnoyH1TzT0eqjCoSw1dkYXMKKcpO5_NbfHJ-d3bDQjlLOJtBk_EwKsiXoq3gGqUC854KC/pub?gid=0&single=true&output=csv";
 
-let hymns=[],size=16,playlist=[],currentIndex=0;
+let hymns=[],playlist=[],currentIndex=0,size=16;
 
 function font(d){
   size=Math.min(26,Math.max(12,size+d));
@@ -184,11 +210,10 @@ function open(h){
     player.src=h.audio;
     player.style.display='block';
     downloadLink.href=h.audio;
-    downloadLink.style.display='inline-block';
+    downloadLink.style.display='block';
   } else {
     player.style.display='none';
     downloadLink.style.display='none';
-    player.src='';
   }
   overlay.classList.add('active');
 }
@@ -198,13 +223,30 @@ function closeDetail(){
   overlay.classList.remove('active');
 }
 
-function startPlaylist(){
+function openPlaylist(){
   playlist=hymns.filter(h=>h.audio);
-  if(!playlist.length) return;
   currentIndex=0;
-  playlistPlayer.style.display='block';
-  playlistPlayer.src=playlist[0].audio;
+  playlistOverlay.classList.add('active');
+}
+
+function closePlaylist(){
+  playlistPlayer.pause();
+  playlistOverlay.classList.remove('active');
+}
+
+function startPlaylist(){
+  if(!playlist.length) return;
+  playlistPlayer.src=playlist[currentIndex].audio;
   playlistPlayer.play();
+}
+
+function pausePlaylist(){
+  playlistPlayer.pause();
+}
+
+function stopPlaylist(){
+  playlistPlayer.pause();
+  playlistPlayer.currentTime=0;
 }
 
 playlistPlayer.addEventListener('ended',()=>{
