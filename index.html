@@ -163,14 +163,22 @@ audio{width:100%;margin-top:1rem}
   .controls{margin-left:0}
 }
 
+/* === FINAL MOBILE OVERFLOW FIX (NO REGRESSIONS) === */
 .brand{
   display:flex;
   align-items:center;
   gap:1rem;
-  flex-shrink:0;
+  max-width:100%;
 }
 .brand h1{
   white-space:nowrap;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.controls{
+  flex-shrink:0;
 }
 
 @media(max-width:600px){
@@ -180,6 +188,19 @@ audio{width:100%;margin-top:1rem}
   }
   .controls{
     margin-top:.6rem;
+    flex-wrap:wrap;
+    gap:.8rem;
+  }
+  h1{
+    font-size:clamp(1.4rem,5vw,1.9rem);
+  }
+
+  .detail-header{
+    flex-wrap:wrap;
+    gap:.6rem;
+  }
+  .detail-controls{
+    flex-wrap:wrap;
   }
 }
 
@@ -190,10 +211,8 @@ audio{width:100%;margin-top:1rem}
 
 <header>
   <div class="header-wrapper">
-    <div class="brand">
-      <img src="https://i.imgur.com/4aZvsOD.png">
-      <h1>Hinário Ubuntu</h1>
-    </div>
+    <img src="https://i.imgur.com/4aZvsOD.png">
+    <h1>Hinário Ubuntu</h1>
     <div class="controls">
       <button onclick="toggleTheme()">🌙</button>
       <button onclick="font(-1)">A-</button>
