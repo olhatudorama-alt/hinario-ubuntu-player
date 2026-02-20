@@ -211,9 +211,8 @@ audio{width:100%;margin-top:1rem}
       <button onclick="plStop()" style="background:var(--card);border:2px solid var(--primary);color:var(--accent);padding:.4rem .8rem;border-radius:8px;font-size:1.1rem;cursor:pointer">⏹</button>
       <button onclick="plNext()" style="background:var(--card);border:2px solid var(--primary);color:var(--accent);padding:.4rem .8rem;border-radius:8px;font-size:1.1rem;cursor:pointer">⏭</button>
     </div>
-    <div id="plNowPlaying" style="margin-bottom:1rem;font-weight:bold"></div>
-    <audio id="plPlayer" style="width:100%;margin-bottom:1.2rem"></audio>
-    <div id="plList" style="max-height:55vh;overflow-y:auto"></div>
+    <div id="plNowPlaying" style="margin-bottom:1.2rem;font-weight:bold;font-size:1.1rem"></div>
+    <audio id="plPlayer" controls style="width:100%;margin-bottom:.5rem"></audio>
     <span class="back" style="display:block;margin-top:1.5rem;color:var(--accent);font-weight:bold;cursor:pointer" onclick="closePlaylist()">← Voltar ao índice</span>
   </div>
 </div>
@@ -301,16 +300,6 @@ let plIndex=0,plAudio=document.getElementById('plPlayer');
 
 function openPlaylist(){
   const withAudio=hymns.filter(h=>h.audio);
-  const plListEl=document.getElementById('plList');
-  plListEl.innerHTML='';
-  withAudio.forEach((h,i)=>{
-    const d=document.createElement('div');
-    d.className='card';
-    d.id='plItem'+i;
-    d.innerHTML='<span class="num">'+h.num+'</span>'+h.title;
-    d.onclick=()=>{plIndex=i;plLoadAndPlay(withAudio);};
-    plListEl.appendChild(d);
-  });
   plIndex=0;
   plLoadTrack(withAudio);
   document.getElementById('playlistOverlay').classList.add('active');
@@ -321,12 +310,7 @@ function openPlaylist(){
 function plLoadTrack(list){
   const h=list[plIndex];
   plAudio.src=h.audio;
-  document.getElementById('plNowPlaying').textContent='♪ '+h.num+' – '+h.title;
-  // highlight
-  list.forEach((_,i)=>{
-    const el=document.getElementById('plItem'+i);
-    if(el) el.style.outline=i===plIndex?'2px solid var(--primary)':'';
-  });
+  document.getElementById('plNowPlaying').textContent='♪ Tocando agora – '+h.num+' – '+h.title;
 }
 
 function plLoadAndPlay(list){
