@@ -41,18 +41,12 @@ header{
   display:flex;
   align-items:center;
   gap:1rem;
-  flex-wrap:nowrap;
 }
-header img{
-  width:72px;
-  height:72px;
-  flex-shrink:0;
-}
+header img{width:72px;height:72px}
 h1{
   font-family:'Nunito',sans-serif;
   font-size:2.3rem;
   font-weight:700;
-  white-space:nowrap;
 }
 .controls{
   margin-left:auto;
@@ -163,10 +157,28 @@ audio{width:100%;margin-top:1rem}
   text-decoration:none;
 }
 
-/* MOBILE: APENAS AJUSTE DE TAMANHO, SEM QUEBRA */
+/* RESPONSIVO */
+@media(max-width:600px){
+  .header-wrapper{flex-direction:column;align-items:flex-start}
+  .controls{margin-left:0}
+}
+
+.header-wrapper{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  flex-wrap:nowrap;
+}
+header img{
+  flex-shrink:0;
+}
+h1{
+  white-space:nowrap;
+}
 @media(max-width:600px){
   h1{font-size:1.8rem}
 }
+
 </style>
 </head>
 
