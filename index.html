@@ -163,7 +163,10 @@ audio{width:100%;margin-top:1rem}
   .controls{margin-left:0}
 }
 
-/* === PATCH MÍNIMO: logo + título lado a lado no MOBILE (SEM mexer no resto) === */
+/* === PATCH ÚNICO E FINAL ===
+   Objetivo: no MOBILE, manter LOGO + "Hinário Ubuntu" LADO A LADO,
+   sem quebra de linha e sem afetar qualquer outra funcionalidade.
+*/
 @media (max-width: 600px) {
   .header {
     display: flex;
@@ -175,6 +178,8 @@ audio{width:100%;margin-top:1rem}
   }
   .header img {
     flex-shrink: 0;
+    max-width: 56px;
+    height: auto;
   }
   .header h1 {
     white-space: nowrap;
