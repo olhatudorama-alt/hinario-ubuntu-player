@@ -159,32 +159,23 @@ audio{width:100%;margin-top:1rem}
 
 /* RESPONSIVO */
 @media(max-width:600px){
-  .header-wrapper{flex-direction:column;align-items:flex-start}
   .controls{margin-left:0}
 }
 
-/* === PATCH ÚNICO E FINAL ===
-   Objetivo: no MOBILE, manter LOGO + "Hinário Ubuntu" LADO A LADO,
-   sem quebra de linha e sem afetar qualquer outra funcionalidade.
-*/
-@media (max-width: 600px) {
-  .header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 12px;
-    flex-wrap: nowrap;
-  }
-  .header img {
-    flex-shrink: 0;
-    max-width: 56px;
-    height: auto;
-  }
-  .header h1 {
-    white-space: nowrap;
-    margin: 0;
-  }
+.header-wrapper{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  flex-wrap:nowrap;
+}
+header img{
+  flex-shrink:0;
+}
+h1{
+  white-space:nowrap;
+}
+@media(max-width:600px){
+  h1{font-size:1.5rem}
 }
 
 </style>
